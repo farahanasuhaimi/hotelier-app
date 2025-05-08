@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
+use App\Models\Room;
+use App\Models\Staff;
 use App\Models\Activity;
+use Illuminate\Database\Seeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class ActivitiesTableSeeder extends Seeder
 {
@@ -22,13 +24,15 @@ class ActivitiesTableSeeder extends Seeder
             'Room inspection completed',
             'Guest complaint resolved'
         ];
+        $randomRoom = Room::inRandomOrder()->first();
+        $randomStaff = Staff::inRandomOrder()->first();
 
         for ($i = 0; $i < 10; $i++) {
             Activity::create([
                 'type' => $types[array_rand($types)],
                 'description' => $descriptions[array_rand($descriptions)],
-                'room_id' => rand(1, 24),
-                'staff_id' => rand(1, 5),
+                'room_id' => $randomRoom ? $randomRoom->id : null, // Handle if no rooms/staff exist
+                'staff_id' => $randomStaff ? $randomStaff->id : null,
                 'completed_at' => rand(0, 1) ? now()->subHours(rand(1, 24)) : null,
             ]);
         }

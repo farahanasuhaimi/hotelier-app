@@ -18,6 +18,7 @@ class TaskSeeder extends Seeder
     {
         $taskTypes = ['cleaning', 'maintenance', 'inspection', 'linen_change', 'stock_check'];
         $priorities = ['low', 'medium', 'high'];
+        $manager = Staff::where('position', 'Manager')->first();
 
         // Get all rooms that need cleaning or maintenance
         $rooms = Room::whereIn('status', ['needs_cleaning', 'maintenance'])->get();
@@ -26,7 +27,7 @@ class TaskSeeder extends Seeder
             Task::create([
                 'room_id' => $room->id,
                 'staff_id' => $room->assigned_staff_id, // Default to room's assigned staff
-                'created_by' => Staff::where('position', 'Manager')->first()->id,
+                'created_by' => $manager ? $manager->id : Staff::inRandomOrder()->first()->id, // Fallback if no manager
                 'type' => $room->status === 'needs_cleaning' ? 'cleaning' : 'maintenance',
                 'description' => $room->status === 'needs_cleaning'
                     ? 'Standard room cleaning'
